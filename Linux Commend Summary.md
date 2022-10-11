@@ -67,5 +67,6 @@ cp AA BB -r -i -v
 
 ```bash
 ls > BB/info.txt
+ls AA > BB/info.txt
 ```
 
