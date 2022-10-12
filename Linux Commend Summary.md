@@ -1,13 +1,30 @@
-# Linux
+# Linux - Basic Commend
 
 ```bash
-#快速启动终端
+# 快速启动终端
 ctr + alt + t
 
-#终端字体放大
+# 终端字体放大
 ctr + shift + '+'
-#终端字体缩小
+# 终端字体缩小
 ctr + '-' 
+```
+
+## cd
+
+```bash
+# 切换到当前用户的主目录
+cd ~
+cd
+
+# 切换到上一次目录
+cd -
+
+# 切换到上一级目录
+cd ..
+
+# 切换到当前目录
+cd .
 ```
 
 ## ls
@@ -27,7 +44,11 @@ ls -lha
 - -p 创建依赖
 
 ```bash
+# 创建嵌套文件夹
 mkdir AA/BB/CC -p
+
+# 创建隐藏目录
+mkdir .AA
 ```
 
 - -i 交互提示
@@ -56,6 +77,11 @@ cp 1.txt AA -i
 
 # 拷贝文件夹
 cp AA BB -r -i -v 
+
+# 移动文件到指定文件夹里
+mv 1.txt AA
+
+# mv 同一级目录下可以重命名
 ```
 
 ## I/O Redirection
