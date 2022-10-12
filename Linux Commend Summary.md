@@ -37,6 +37,10 @@ cd .
 
 ```bash
 ls -lha
+
+# 以下命令相等
+ls -la
+ll
 ```
 
 ## mkdir rm
@@ -95,4 +99,53 @@ mv 1.txt AA
 ls > BB/info.txt
 ls AA > BB/info.txt
 ```
+
+## cat more
+
+- cat more 只能查看文件，不能修改文件。
+
+```bash
+# 查看多个小文件内容
+cat 1.txt 2.txt
+
+ls /bin >> 3.txt
+more 3.txt
+# 下一页 f 或者 空格
+# 上一页 b
+# 下一行 回车
+
+# 打开编辑模式
+gedit 1.txt
+```
+
+## |
+
+- 相当于数据的容器，可以把终端打印的数据保存这个管道里。
+- 管道不能查看上一页
+
+```bash
+ls /bin | more
+```
+
+## ln -s & ln
+
+- ln-s 创建软连接，相当于windows创建快捷方式。
+- ln 创建硬链接
+
+```bash
+# 创建在同一目录下软连接，可以用相对路径。
+ln -s 2.txt 2-s.txt
+
+# 创建在不同目录下软连接，需要用绝对路径。
+ln -s /home/yinanli/Desktop/AAA/2.txt ../2-s2.txt
+
+# 创建目录的软连接
+ln -s /home/yinanli/Desktop/AAA/ AAA-s
+```
+
+
+
+
+
+
 
