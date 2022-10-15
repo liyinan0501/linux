@@ -224,7 +224,137 @@ ls 1*.txt
 mv *.txt CC
 ```
 
+## tar zip unzip
 
+能够使用tar命令完成文件的压缩和解压缩。
+
+尽量使用gz格式，因为占用空间较少。
+
+- .gz 和.bz2的压缩包需要使用tar命令来压缩和解压缩。
+- .zip的压缩包需要使用zip命令来压缩，使用unzip命令来解压缩。
+- -c 创建打包文件
+- -v 显示包里的文件信息
+- -f 指定压缩文件的文件名，必须放到所有选项后面
+- -z 压缩和解压缩.gz
+- -j 压缩和解压缩.bz2
+- -x 解包
+- -C 解压缩到指定目录
+- 压缩包固定写法是 xxx.tar.gz
+
+```bash
+# 压缩 .gz
+tar -zcvf test.tar.gz *.txt
+
+# 解压 .gz 到同一目录
+tar -zxvf test.tar.gz
+
+# 解压 .gz 到指定目录 
+tar -zxvf test.tar.gz -C AA
+
+# 压缩 .bz2
+tar -jcvf test.bz2 *.txt
+
+# 解压 .bz2 到同一目录
+tar -jxvf test.bz2
+
+# 解压 .bz2 到指定目录 
+tar -jxvf test.bz2 -C AA
+```
+
+能够使用 zip 和 unzip命令完成文件的压缩和解压缩。
+
+- zip 压缩成 .zip文件
+- unzip 解压缩 .zip格式文件
+- -d 解压缩到指定目录
+
+```bash
+# 压缩成zip文件
+# 不用写test.zip后缀
+zip test *.txt
+
+# 解压zip文件到同一目录
+unzip test.zip
+
+# 解压zip文件到指定目录
+unzip test.zip -d AA
+```
+
+## chmod
+
+能够修改文件权限
+
+修改文件权限两种方式：
+
+- 字母法
+
+  角色说明
+
+  | 角色 | 说明            |
+  | ---- | --------------- |
+  | u    | user 文件拥有者 |
+  | g    | group 用户组    |
+  | o    | other 其他用户  |
+  | a    | all 所有用户    |
+
+  权限设置：
+
+  | 操作符 | 说明     |
+  | ------ | -------- |
+  | +      | 增加权限 |
+  | -      | 撤销权限 |
+  | =      | 设置权限 |
+
+  权限说明：
+
+  | 权限 | 说明       |
+  | ---- | ---------- |
+  | r    | 可读       |
+  | w    | 可写       |
+  | x    | 可执行     |
+  | -    | 无任何权限 |
+
+  ```bash
+  # 修改1.txt文件所有者无读取的权限
+  chmod u-r 1.txt
+  cat 1.txt
+  # Permission denied
+  # 撤销
+  chomod u+r 1.txt
+  
+  # 所有权限更改
+  chmod a=rw 1.txt
+  chmod a=- 1.txt
+  
+  # 分别修改权限
+  chmod u=rw,g=r,o=r 1.txt
+  ```
+
+## 
+
+- 数字法
+
+  多种权限数字相加
+
+  | 权限 | 说明     |
+  | ---- | -------- |
+  | r    | 可读 4   |
+  | w    | 可写 2   |
+  | x    | 可执行 1 |
+  | -    | 无权限 0 |
+
+  ```bash
+  # 当前用户可读可写，同组用户可读，其他用户可读。
+  chmod 644 1.txt
+  -rw-r--r-- 1.txt
+  
+  # 所有用户可读可写可执行
+  chomod 777 1.txt
+  
+  # 所有用户无任何权限
+  chomod 000 1.txt
+  ```
+
+  
 
 
 
