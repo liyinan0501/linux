@@ -72,8 +72,14 @@ rm -r AA
 ## cp mv
 
 - mv cp命令务必加 -i，否则不询问直接覆盖已有文件或文件夹。
-
 - -v 显示拷贝描述。
+
+| 命令选项 | 说明                                                         |
+| -------- | ------------------------------------------------------------ |
+| -i       | 交互式提示                                                   |
+| -r       | 递归拷贝目录及内容                                           |
+| -v       | 显示拷贝后的路径描述                                         |
+| -a       | 保留文件或文件夹下的文件原有权限，不加这个拷贝后，原有权限会丢失。 |
 
 ```bash
 # 拷贝文件
@@ -81,6 +87,7 @@ cp 1.txt AA -i
 
 # 拷贝文件夹
 cp AA BB -r -i -v 
+cp AAA CCC -ria
 
 # 移动文件到指定文件夹里
 mv 1.txt AA
@@ -329,8 +336,6 @@ unzip test.zip -d AA
   chmod u=rw,g=r,o=r 1.txt
   ```
 
-## 
-
 - 数字法
 
   多种权限数字相加
@@ -354,7 +359,297 @@ unzip test.zip -d AA
   chomod 000 1.txt
   ```
 
-  
+
+
+
+## shutdown reboot
+
+- `shutdown -h now` 立刻关键
+- `reboot` 重启
+
+## passwd
+
+- 修改当前用户密码
+
+## useradd
+
+**创建用户**
+
+- -m 自动创建用户的主目录。
+- -g 指定用户所属的用户组，默认不指定会自动创建一个同名的用户组。
+
+```bash
+whoami
+
+# 创建用户
+sudo useradd -m venla
+
+# 查看用户信息
+cat /etc/passwd
+cat /etc/group
+id
+id venla
+
+# 创建用户密码
+sudo passwd venla
+
+# 切换用户
+su - venla
+whoami
+```
+
+**修改用户**
+
+每个用户只属于一个用户组（主组），但是可以有很多个附加组。
+
+- usermod 修改用户信息
+- -G 设置一个附加组
+- -g 修改用户组（主组）
+
+```bash
+# 查看附加组sudo下的用户
+cat /etc/group
+
+# 因为当前用户下没有权限设置附加组，需要exit先退出来到有权限的用户。
+exit
+
+# 给用户设置附加组
+sudo usermod -G sudo venla
+
+# 查看是否设置成功
+id venla
+```
+
+**删除附加组**
+
+- gpasswd 添加和删除附加组信息。
+- -a 用户名，给用户添加附加组。
+- -d用户名，给用户删除附加组。
+
+```bash
+# 把用户从附加组（sudo）中删除
+sudo gpasswd -d venla sudo
+
+# 查看是否设置成功
+id venla
+```
+
+**删除用户**
+
+- userdel 删除用户
+- -r 用户名，删除用户主目录，必须要设置，否则用户主目录不会删除
+
+```bash
+# 需要退出要删除的用户，然后关闭终端。
+exit
+
+# 删除用户
+sudo userdel -r venla
+
+# 检查是否删除成功
+cat /etc/passwd
+cat /etc/group
+```
+
+## groupadd
+
+**创建用户组**
+
+- groupadd 创建用户组
+
+```bash
+sudo groupadd test
+
+# 确认是否创建成功
+ls /etc/group
+```
+
+- 创建用户并制定用户组
+
+```bash
+sudo useradd -m -g test venla
+
+# 查看设置是否成功
+grep test /etc/group
+```
+
+**修改用户组**
+
+```bash
+sudo usermod -g abc venla
+```
+
+**删除用户组**
+
+```bash
+sudo groupdel test
+
+# 如果用户组下有用户，需要先删除用户。
+sudo groupdel abc
+sudo userdel -r venla
+```
+
+# Vim
+
+**三种模式：**
+
+- 命令模式
+- 编辑模式
+- 末行模式
+
+vim打开文件默认进入的是命令模式
+
+命令模式 > 编辑模式 输入：`i `
+
+编辑模式 > 命令模式 输入：`esc`
+
+命令模式 > 末行模式 输入：`：`
+
+末行模式 > 命令模式 输入：`esc`
+
+- `:w` 写入，不退出。
+- `:wq` 或 `:x` 写入退出。
+- `:q!` 强制退出，不会保存。
+
+**vim 常用命令：**
+
+| 命令                                          | 说明                                              |
+| --------------------------------------------- | ------------------------------------------------- |
+| y                                             | 复制                                              |
+| yy                                            | 复制光标所在行                                    |
+| p                                             | 粘贴 (粘贴5次`5p`)                                |
+| dd                                            | 删除/剪切当前行                                   |
+| V                                             | 按行选中，光标所经过的行都会被选中。再按G会全选。 |
+| u                                             | 撤销                                              |
+| ctr+r                                         | 反撤销                                            |
+| >>                                            | 往右缩进                                          |
+| <<                                            | 往左缩进                                          |
+| :/搜索内容                                    | 搜索指定内容，下一个n，上一个N。                  |
+| :%s/要替换的内容/替换后的内容/g               | 全局替换(%表示整个文件，s表示替换，g表示全局替换) |
+| :开始行数,结束行数s/要替换的内容/替换后的内容 | 局部替换                                          |
+| .                                             | 重复上一次命令操作                                |
+| G                                             | 回到最后一行                                      |
+| gg                                            | 回到第一行                                        |
+| 数字+G                                        | 回到指定行                                        |
+| shift+6                                       | 回到当前行的行首                                  |
+| shift+4                                       | 回到当前行的行末                                  |
+| ctr+f                                         | 下一屏                                            |
+| ctr+b                                         | 上一屏                                            |
+
+# Install
+
+- 离线安装 .deb
+
+  - 安装 `sudo dpkg -i xxxx.deb`
+  - 卸载 `sudo dpkg -r xxxx`
+
+- 在线安装 apt-get
+
+  - 安装 `sudo apt-get install xxxx`
+
+  - 更新下载列表 `sudo apt-get update` 告诉我们服务器有哪些软件不让下载
+
+  - 卸载 `sudo apt-get remove xxxx`
+
+    
+
+# Process
+
+进程
+
+一个正在运行的程序或者软件就是一个进程process，只要启动一个进程，操作系统需要给这个进程分配内存资源，从而保证进程运行。
+
+一个程序运行后至少有一个进程，一个进程默认有一个线程，进程里面可以创建多个线程，线程是衣服在进程里面，没有进程就没有线程。
+
+例如，hello.py 程序会创建一个进程，默认提供一个线程，这个线程执行里面的代码。
+
+- 能够使用多进程完成多任务
+
+1. 导入进程包
+
+   `import multiprocessing`
+
+2. Process 进程类说明
+
+   **Process([group [, target [, name [, args [, kwargs]]]]])**
+
+   - group: 进程组，目前只能使用None，不用设置。
+   - target: 执行的目标任务名(一个函数或一个方法)。
+   - name: 进程名字，一般不会设置，会有默认名字Process-N。
+   - args: 以元组方式给执行任务传参。
+   - kwargs: 以字典方式给执行任务传参。
+
+   **Process 创建的实力对象的常用方法**
+
+   - start(): 启动子进程实例(创建子进程)。
+   - join(): 等待子进程执行结束。
+   - terminate(): 不管任务是否完成，立即终止进程。
+
+方法一：主进程运行sing，子进程运行dance。
+
+````python
+# 1. 导入进程包。
+import multiprocessing
+import time
+def dance():
+    for i in range(3):
+        print("Dancing...")
+        time.sleep(0.2)
+def sing():
+    for i in range(3):
+        print("Singing...")
+        time.sleep(0.2)
+# 2. 因为默认有一个进程，自己手动创建的进程为子进程。
+dance_process = multiprocessing.Process(target=dance)
+# 3. 启动进程，执行对应的任务。
+dance_process.start()
+# 主进程执行唱歌任务
+sing()
+````
+
+方法二：主进程创建两个子进程分别运行sing和dance。
+
+```python
+# 1. 导入进程包。
+import multiprocessing
+import time
+def dance():
+    for i in range(3):
+        print("Dancing...")
+        time.sleep(0.2)
+def sing():
+    for i in range(3):
+        print("Singing...")
+        time.sleep(0.2)
+# 2. 因为默认有一个进程，自己手动创建的进程为子进程。
+dance_process = multiprocessing.Process(target=dance)
+sing_process = multiprocessing.Process(target=sing)
+# 3. 启动进程，执行对应的任务。
+dance_process.start()
+sing_process.start()
+# 进程执行是无序的，具体哪个进程先执行是由操作系统调度决定的。
+```
+
+- 进程之间不共享全局变量
+  - 创建子进程其实是对主进程资源进行拷贝，子进程其实就是主进程的一个副本。
+    - 对于linux和mac主进程的代码不会全程拷贝，但是window系统来说主进程执行代码也会进行拷贝。
+    - 对于windows来说创建子进程的代码如果进行拷贝执行相当于递归无限制进行创建子进程，会报错。
+      - 用`if __name__ == '__main__':` 判断是否是主模块来解决
+- 主进程会等等所有子进程执行结束后再结束
+  - 如果要实现主进程退出，子进程销毁，有两种方法：
+    1. `sub_process.daemon = True` 设置子进程为守护主进程。
+    2. `sub_process.termintate()` 主进程退出之前，让子进程销毁。
+
+
+# Thread
+
+线程
+
+
+
+
+
+
 
 
 
