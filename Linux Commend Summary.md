@@ -630,6 +630,9 @@ sing_process.start()
 # 进程执行是无序的，具体哪个进程先执行是由操作系统调度决定的。
 ```
 
+## 注意点：
+
+- 进程之间执行顺序是无序的。
 - 进程之间不共享全局变量
   - 创建子进程其实是对主进程资源进行拷贝，子进程其实就是主进程的一个副本。
     - 对于linux和mac主进程的代码不会全程拷贝，但是window系统来说主进程执行代码也会进行拷贝。
@@ -645,11 +648,128 @@ sing_process.start()
 
 线程
 
+线程是进程中执行代码的一个分支，每个执行分支（线程）要想工作执行代码需要cpu进行调度，也就是说线程是cpu调度的基本单位，每个进程至少都有一个线程，而这个线程就是主线程。
 
+- 除了多进程，多线程也是实现多任务的另一种方式。
 
+1. 导入线程模块
 
+   `import threading`
 
+2. Thread 线程类说明
 
+   **Thread([group [, target [, name [, args [, kwargs]]]]])**
 
+   - group: 线程组，目前只能使用None，不用设置。
+   - target: 执行的目标任务名(一个函数或一个方法)。
+   - name: 进程名字，一般不会设置，会有默认名字Thread-N。
+   - args: 以元组方式给执行任务传参。
+   - kwargs: 以字典方式给执行任务传参。
 
+3. 启动进程 start()。
+
+多线程多任务：(三条线程，主线程，两条子线程dance 和 sing)
+
+```python
+# 1.导入线程模块
+import threading
+import time
+
+def sing():
+    # 获取当前线程
+    current_thread = threading.current_thread()
+    print("sing: ", current_thread)
+
+    for i in range(3):
+        print("Singing...")
+        time.sleep(0.2)
+
+def dance():
+    # 获取当前线程
+    current_thread = threading.current_thread()
+    print("dance: ", current_thread)
+
+    for i in range(3):
+        print("Dancing...")
+        time.sleep(0.2)
+
+if __name__ == "__main__":
+    # 获取当前线程
+    current_thread = threading.current_thread()
+    print("main_thread: ", current_thread)
+
+    # 2.创建子线程
+    sing_thread = threading.Thread(target=sing)
+    dance_thread = threading.Thread(target=dance)
+    # 3.启动子线程
+    sing_thread.start()
+    dance_thread.start()
+```
+
+## 注意点：
+
+- 线程之间执行顺序是无序的。
+
+- 主线程会等等所有子线程程执行结束后再结束。
+
+  - 如果要实现主线程退出，子线程销毁：
+    - `sub_thread.setDaemon(True)` 或 `sub_thread = threading.Thread(target=task, daemon=True)` 设置子线程为守护主线程。
+
+- 单进程多线程中，可以共享全局变量。
+
+  - 因为多线程在同一个进程里面，所以多线程可以共享全局变量。
+
+- 线程之间共享全局变量，数据会出现错误问题。
+
+  - 例如让两个子线程同时分别给全局变量加1，并且执行100万次，会出现错误。
+
+    - **解决方式1：线程等待 (join)**
+
+    - 让第一个线程先执行，然后在让第二个线程再执行，保证数据不会有问题。
+
+    - 保证同一时刻只能有一个线程去操作全局变量。
+
+      ```python
+      first_thread.start()
+      first_thread.join()
+      second_thread.start()
+      ```
+
+    - **解决方式2：互斥锁 (lock)**
+
+    - 对共享数据（全局变量）进行锁定，保证同时一时刻只能有一个线程去操作。
+
+    - 互斥锁是多个线程一起去抢，抢到锁的进程先执行（谁先抢到是无法控制的），没有抢到锁的线程需要等待，等互斥锁使用完释放后，其他等待的线程再去抢这个锁。
+
+  - 线程等待和互斥锁都是把多任务改成单任务去执行，保证了数据的准确性，但是执行性能会下降。
+
+# Deadlock
+
+一直等待对方释放锁的情景叫做死锁
+
+```python
+import threading
+
+lock = threading.Lock()
+
+def get_value(index):
+
+    lock.acquire()
+    my_list = [1, 4, 6]
+    
+    if index >= len(my_list):
+        print("Index out range: ", index)
+        # 取值不成功，也需要释放互斥锁，不要影响后面的线程取值，否则会形成死锁。
+        lock.release()
+        return
+    value = my_list[index]
+    print("value: ", value)
+    
+    lock.release()
+
+if __name__ == "__main__":
+    for i in range(10):
+        sub_thread = threading.Thread(target=get_value, args=(i,))
+        sub_thread.start()
+```
 
